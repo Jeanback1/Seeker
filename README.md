@@ -1,42 +1,39 @@
-Nmap-Report-Gen (or your tool name)
+# Seeker
 
-A streamlined automation tool designed to execute and organize Nmap scans specifically for laboratory environments and CTF platforms like Hack The Box (HTB) or TryHackMe.
-🚀 Purpose & Philosophy
+-Automated Workspace Setup: Automatically creates a dedicated directory for the target machine to keep your environment organized from minute one.
 
-Unlike real-world engagements where stealth is paramount, this tool is built for speed and maximum information gathering.
+-Standardized Recon: Runs the essential Nmap scan that every machine requires, ensuring you never miss a common service.
 
-    Noisy by Design: In a CTF environment, we don't care about EDR or SOC alerts. We want every bit of data as fast as possible.
+-Auto-Logging: Pipe-lined output directly into a structured .txt file, ready for your notes or documentation.
 
-    Zero Noise-Floor: By utilizing the --open flag, the script ignores closed and filtered ports, keeping your reports clean and focused strictly on viable attack vectors.
+-Laboratory Optimized: Specifically tailored for CTF environments where speed and data volume are more important than stealth.
 
-✨ Key Features
+-Noisy by Design: In a CTF environment, we don't care about EDR or SOC alerts. We want every bit of data as fast as possible.
 
-    Automated Directory Structuring: Use the -n flag to create a dedicated folder for the target machine, keeping your workspace organized.
+-Zero Noise-Floor: By utilizing the --open flag, the script ignores closed and filtered ports, keeping your reports clean and focused strictly on viable attack vectors.
 
-    Focused Results: Filters out irrelevant data by only reporting Open Ports.
 
-    HTB Optimized: Pre-configured to handle the aggressive scanning often required for complex lab machines.
+# Installation
 
-    Clean Output: Generates a structured summary ready for documentation or further exploitation phases.
+    Ensure you have nmap installed on your system.
 
-🛠 Installation
+Clone the repository
 
-Ensure you have nmap installed on your system.
+    git clone https://github.com/Jeanback1/seeker
 
-# Clone the repository
-git clone https://github.com/Jeanback1/seeker
+Enter the directory
 
-# Enter the directory
-cd seeker
+    cd seeker
 
-# Make the script executable
-chmod +x seeker.py
+Make the script executable
 
-📖 Usage
+    chmod +x seeker.py
+
+# Usage
 
 The script is designed to be simple and efficient.
 
-python3 seeker.py -n <MachineName> -i <Target_IP> -u <path>
+    python3 seeker.py -n <MachineName> -i <Target_IP> -u <path>
 
 
 🛡 Disclaimer
