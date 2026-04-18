@@ -23,13 +23,33 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-# --- AI Configuration (read at startup) ---
+
+def load_config():
+    """Read seeker.conf from the script's directory and return a key=value dict."""
+    conf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seeker.conf")
+    config = {}
+    if not os.path.exists(conf_path):
+        return config
+    with open(conf_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            config[key.strip().lower()] = value.strip()
+    return config
+
+
+# --- AI Configuration: defaults → seeker.conf → env vars (highest priority) ---
+_conf = load_config()
+
 ANTHROPIC_API_KEY  = os.environ.get("ANTHROPIC_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-SEEKER_MODEL       = os.environ.get("SEEKER_MODEL", "claude-sonnet-4-6")
-SEEKER_PROVIDER    = os.environ.get("SEEKER_PROVIDER", "anthropic")  # "anthropic" | "openrouter"
+SEEKER_PROVIDER    = os.environ.get("SEEKER_PROVIDER") or _conf.get("provider", "anthropic")
+SEEKER_MODEL       = os.environ.get("SEEKER_MODEL")    or _conf.get("model", "claude-sonnet-4-6")
+SEEKER_LANGUAGE    = os.environ.get("SEEKER_LANGUAGE") or _conf.get("language", "english")
 
-ANALYSIS_PROMPT_TEMPLATE = """\
+ANALYSIS_PROMPT_TEMPLATE_EN = """\
 You are an expert CTF penetration tester and vulnerability researcher. \
 Analyze the following nmap scan results and provide a structured attack plan.
 
@@ -63,6 +83,49 @@ HTTP directory listing, default SSH keys, weak web application credentials).
 ## 6. Suggested Tools & Commands
 For the top 3 attack vectors, provide the exact commands or tool invocations to begin exploitation.
 """
+
+ANALYSIS_PROMPT_TEMPLATE_ES = """\
+Eres un experto en pentesting CTF e investigación de vulnerabilidades. \
+Analiza los siguientes resultados del escaneo nmap y proporciona un plan de ataque estructurado.
+
+DATOS DEL ESCANEO:
+{scan_summary}
+
+Proporciona tu análisis en las siguientes secciones:
+
+## 1. Resumen de Puertos Abiertos y Servicios
+Lista cada puerto abierto con el servicio, versión y una descripción breve de su función.
+
+## 2. Evaluación de la Superficie de Ataque
+Identifica los vectores de ataque más prometedores ordenados por probabilidad de éxito en un \
+contexto CTF. Considera: credenciales por defecto, exploits conocidos para las versiones \
+detectadas, configuraciones incorrectas, autenticación débil, acceso anónimo.
+
+## 3. Vulnerabilidades Específicas
+Para cada servicio, lista:
+- CVEs conocidos (si aplica a la versión detectada)
+- Exploits comunes (nombres de módulos Metasploit si están disponibles, IDs de ExploitDB)
+- Debilidades específicas de la versión
+
+## 4. Orden de Ataque Recomendado
+Proporciona una secuencia de ataque numerada paso a paso, comenzando por los puntos de \
+entrada más accesibles.
+
+## 5. Victorias Rápidas
+Lista los servicios o configuraciones que suelen estar mal configurados en entornos CTF y \
+que deben verificarse de inmediato (ej. FTP anónimo, sesiones nulas SMB, listado de \
+directorios HTTP, claves SSH por defecto, credenciales débiles en aplicaciones web).
+
+## 6. Herramientas y Comandos Sugeridos
+Para los 3 vectores de ataque principales, proporciona los comandos exactos o invocaciones \
+de herramientas para comenzar la explotación.
+"""
+
+ANALYSIS_PROMPT_TEMPLATE = (
+    ANALYSIS_PROMPT_TEMPLATE_ES
+    if SEEKER_LANGUAGE.lower() == "spanish"
+    else ANALYSIS_PROMPT_TEMPLATE_EN
+)
 
 
 def print_banner():
