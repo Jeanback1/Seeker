@@ -63,10 +63,35 @@ Seeker can automatically analyze nmap results using an AI model. The tool runs f
     export OPENROUTER_API_KEY="sk-or-..."
     export SEEKER_PROVIDER="openrouter"
 
-**Optional overrides**
+**Optional overrides via environment variables**
 
     export SEEKER_PROVIDER="anthropic"           # default: anthropic
     export SEEKER_MODEL="claude-sonnet-4-6"      # default: claude-sonnet-4-6
+    export SEEKER_LANGUAGE="english"             # default: english  |  options: english, spanish
+
+
+# Configuration File (seeker.conf)
+
+As an alternative to environment variables, you can configure Seeker permanently using a `seeker.conf` file placed in the same directory as `seeker.py`.
+
+**Example `seeker.conf`:**
+
+    # provider: anthropic | openrouter
+    provider=anthropic
+
+    # model name (e.g. claude-sonnet-4-6, gpt-4o, deepseek/deepseek-chat-v3-0324)
+    model=claude-sonnet-4-6
+
+    # language: english | spanish
+    language=english
+
+**Priority order (highest wins):**
+
+    environment variables  >  seeker.conf  >  built-in defaults
+
+This means you can set your personal defaults in `seeker.conf` and still override them per-session with `export` commands without editing the file.
+
+> **Note:** API keys (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`) must always be set as environment variables — they are never read from `seeker.conf` for security reasons.
 
 
 # Usage

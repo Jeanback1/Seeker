@@ -40,14 +40,14 @@ def load_config():
     return config
 
 
-# --- AI Configuration: defaults → seeker.conf → env vars (highest priority) ---
+# --- AI Configuration: defaults → env vars → seeker.conf (highest priority) ---
 _conf = load_config()
 
 ANTHROPIC_API_KEY  = os.environ.get("ANTHROPIC_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-SEEKER_PROVIDER    = os.environ.get("SEEKER_PROVIDER") or _conf.get("provider", "anthropic")
-SEEKER_MODEL       = os.environ.get("SEEKER_MODEL")    or _conf.get("model", "claude-sonnet-4-6")
-SEEKER_LANGUAGE    = os.environ.get("SEEKER_LANGUAGE") or _conf.get("language", "english")
+SEEKER_PROVIDER    = _conf.get("provider")  or os.environ.get("SEEKER_PROVIDER")  or "anthropic"
+SEEKER_MODEL       = _conf.get("model")     or os.environ.get("SEEKER_MODEL")     or "claude-sonnet-4-6"
+SEEKER_LANGUAGE    = _conf.get("language")  or os.environ.get("SEEKER_LANGUAGE")  or "english"
 
 ANALYSIS_PROMPT_TEMPLATE_EN = """\
 You are an expert CTF penetration tester and vulnerability researcher. \
