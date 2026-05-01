@@ -173,6 +173,7 @@ def create_environment(location, machine_name):
 def run_initial_scan(target_ip, target_path):
     """Execute Nmap and save results in XML format."""
     output_file = os.path.join(target_path, "scans", "general_scan.xml")
+    nmap_crudo_file = os.path.join(target_path, "scans", "nmap_crudo.txt")
 
     print(f"{BLUE}[*]{ENDC} Launching aggressive Nmap scan on {BOLD}{target_ip}{ENDC}...")
 
@@ -181,14 +182,19 @@ def run_initial_scan(target_ip, target_path):
     # --open: Show only open ports
     # --min-rate 5000: Send packets no slower than 5000 per second
     # -oX: Save output in XML format to the specified file
+    # -oN: Save normal (console) output to the specified file
     nmap_cmd = [
         "sudo", "nmap", "-sVC", "-p-", "--open",
-        "--min-rate", "5000", "-oX", output_file, target_ip
+        "--min-rate", "5000",
+        "-oX", output_file,
+        "-oN", nmap_crudo_file,
+        target_ip
     ]
 
     try:
         subprocess.run(nmap_cmd, check=True)
         print(f"{GREEN}[+]{ENDC} Scan finished. XML saved: {BOLD}{output_file}{ENDC}")
+        print(f"{GREEN}[+]{ENDC} Raw output saved: {BOLD}{nmap_crudo_file}{ENDC}")
     except (subprocess.CalledProcessError, FileNotFoundError):
         print(f"{RED}[!] Scanning failed: Check if Nmap is installed or if you have sudo permissions.{ENDC}")
 
